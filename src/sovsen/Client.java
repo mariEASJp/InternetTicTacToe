@@ -5,13 +5,10 @@ import java.net.*;
  * @Author SovsenGrp 12-Sep-18.
  */
 public class Client {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        try {
-            Socket s = new Socket("127.0.0.1", 3000);
+
+            Socket s = new Socket("127.0.0.1", 3001);
             System.out.println("Connected!");
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
-}

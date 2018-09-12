@@ -5,21 +5,14 @@ import java.net.*;
  * @Author SovenGrp on 12-Sep-18.
  */
 public class Server {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         ServerSocket server = null;
-        try {
-            server = new ServerSocket(3000);
-        } catch (IOException e) {
-            e.printStackTrace();
 
-            try {
-                Socket s=server.accept();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            server = new ServerSocket(3001);
 
             System.out.println("Connected");
+
+                Socket s=server.accept();
+            }
         }
-    }
-}
