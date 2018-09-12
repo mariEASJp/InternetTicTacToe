@@ -1,18 +1,25 @@
 package sovsen;
-import java.io.IOException;
+
+import java.io.DataOutputStream;
+import java.io.*;
 import java.net.*;
+
 /**
  * @Author SovenGrp on 12-Sep-18.
  */
 public class Server {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
-        ServerSocket server = null;
+        try {
 
-            server = new ServerSocket(3001);
+            ServerSocket server = new ServerSocket(3001);
 
+            Socket s = server.accept();
             System.out.println("Connected");
 
-                Socket s=server.accept();
-            }
+            DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+            dos.writeUTF("Welcome to Socket");
+        } catch (Exception e) {
         }
+    }
+}
