@@ -37,7 +37,7 @@ public class Server {
 
                     System.out.println("Client: " + inputLine);
                     outputLine = Board.processInput(inputLine);
-                    outputLine = "You said: " + inputLine;
+
                     System.out.println("Server: " + outputLine);
                     out.println(outputLine);
 
@@ -59,6 +59,7 @@ public class Server {
 
 
     public static void closeServer() throws IOException{
+        System.out.println("Close connection");
         out.close();
         in.close();
         s.close();
