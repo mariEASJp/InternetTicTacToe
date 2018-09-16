@@ -8,47 +8,42 @@ import java.net.*;
  * @Author SovenGrp on 12-Sep-18.
  */
 public class Server {
+
+    static Socket[] clients = new Socket[2];
+    static BufferedReader[] inputs = new BufferedReader[2];
+
     static ServerSocket server;
-    static Socket s;
+    static Socket client;
     static BufferedReader in;
+    static BufferedReader in2;
     static PrintWriter out;
+    static PrintWriter out2;
+    static Socket client2;
 
     public static void main(String[] args) {
 
         try {
 
             server = new ServerSocket(3001);
-
-            s = server.accept();
-            System.out.println("Connected");
+            System.out.println("Server listening");
 
 
-            in = new BufferedReader(
-                    new InputStreamReader(s.getInputStream())
-            );
-            out = new PrintWriter(
-                    s.getOutputStream(), true);
+            while(true){
+                try{
 
-            out.println("Hello, you are connected");
+                    client = server.accept();
+                    System.out.println("Connection established");
 
-            String inputLine = "", outputLine = "";
+                    System.out.println("client1 is: " + client.toString());
 
-                while((inputLine = in.readLine()) != null){
-
-                    System.out.println("Client: " + inputLine);
-                    outputLine = Board.processInput(inputLine);
-
-                    System.out.println("Server: " + outputLine);
-                    out.println(outputLine);
+                    new ServerThread(client).start();
 
 
-                    if (outputLine.equals("End")){
-                        System.out.println("Terminating");
-                        closeServer();
-                        break;
-                    }
-
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("Connection error");
                 }
+            }
 
 
         } catch (Exception e) {
@@ -62,7 +57,7 @@ public class Server {
         System.out.println("Close connection");
         out.close();
         in.close();
-        s.close();
+        client.close();
         server.close();
     }
 
