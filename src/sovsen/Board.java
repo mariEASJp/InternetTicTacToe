@@ -1,8 +1,12 @@
 package sovsen;
 
 import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Board {
+
+    private static List<ServerThread> observers = new ArrayList<ServerThread>();
 
     private static final int NO_PLAYER = 0;
     private static final int PLAYER_X = 1;
@@ -14,8 +18,9 @@ public class Board {
     private static int player = 0;
     private static int winner = 0;
 
-    public static String processInput(String input){
+    public static void processInput(String input){
         String OUTPUT = "";
+        System.out.println("processInput()");
 
         if (validMove(getField(input)) == true){
             setMark(player, getField(input));
@@ -23,7 +28,7 @@ public class Board {
 
             if (checkWin() == true){
                 showWin();
-                return "Congratulations!";
+                OUTPUT = "Congratulations!";
             } else {
 
                 if (player == PLAYER_X) {
@@ -48,9 +53,8 @@ public class Board {
         }
 
 
-        OUTPUT += "~" + viewBoard();
+        notifyAllObservers();
 
-        return OUTPUT;
     }
 
 
@@ -120,15 +124,7 @@ public class Board {
 
 
     private static void setMark(int mark, int[] i){
-
         grid[i[0]][i[1]] = mark;
-    }
-
-
-
-    public static String updateBoard(){
-
-        return "";
     }
 
 
@@ -137,30 +133,32 @@ public class Board {
 
         StringBuilder out = new StringBuilder();
 
+            out.append("BOARD~");
 
-        for (int i = 0; i < grid.length; i++){
-            for (int j = 0; j < grid.length; j++){
+            for (int i = 0; i < grid.length; i++){
+                for (int j = 0; j < grid.length; j++){
 
-                out.append("|");
+                    out.append("|");
 
-                if (grid[i][j] == 0) {
-                    out.append(" ");
-                } else if (grid[i][j] == 1){
-                    out.append("X");
-                } else if (grid[i][j]  == 2){
-                    out.append("O");
+                    if (grid[i][j] == 0) {
+                        out.append(" ");
+                    } else if (grid[i][j] == 1){
+                        out.append("X");
+                    } else if (grid[i][j]  == 2){
+                        out.append("O");
+                    }
+
                 }
 
+                out.append("|");
+                out.append("~");
             }
 
-            out.append("|");
-            out.append("~");
-        }
+
 
 
         return out.toString();
     }
-
 
 
     private static boolean checkWin(){
@@ -221,7 +219,29 @@ public class Board {
     }
 
 
+    public static void notifyAllObservers(){
+        System.out.println("NotifyAllObservers()");
 
+        for (ServerThread s : observers) {
+            System.out.println("Notify all observers " + s.toString());
+            s.update(viewBoard());
+        }
+
+    }
+
+    public static void attach(ServerThread s){
+        System.out.println("ATTACH---");
+        observers.add(s);
+    }
+
+
+
+
+
+
+    public static int getObservers(){
+        return observers.size();
+    }
 
 
     private static void setPlayer(int player1){

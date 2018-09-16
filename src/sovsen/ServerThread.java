@@ -11,68 +11,108 @@ public class ServerThread extends Thread {
     BufferedReader in = null;
     PrintWriter out = null;
     Socket client;
+    String outputLine;
+    String inputLine;
 
     public ServerThread(Socket client){
         this.client = client;
-    }
-
-    public void run() {
-
         try {
-            System.out.println("RUN started");
             in = new BufferedReader(
                     new InputStreamReader(client.getInputStream())
             );
-            System.out.println("test2");
             out = new PrintWriter(
                     client.getOutputStream(), true
             );
 
             out.println("YOU ARE CONNECTED");
 
-            System.out.println("test3");
         } catch (IOException ex) {
             System.out.println("IOException: " + ex.getCause());
         }
+    }
 
-
-        String inputLine, outputLine;
+    public void run() {
 
         try {
-            System.out.println("test4");
             while ((inputLine = in.readLine()) != null) {
-                System.out.println("Client: " + inputLine);
-                outputLine = Board.processInput(inputLine);
+                System.out.println("Client says: " + inputLine);
 
-                System.out.println("test5");
-                String[] strArr = outputLine.split("~");
-                System.out.println("Server: ");
 
-                for (String c : strArr) {
-                    System.out.println(c + "\t");
-                }
+                writeToClient(outputLine);
 
-                out.println(outputLine);
-
+                updateBoard();
             }
         } catch (IOException ex) {
 
             System.out.println("IOException in client " + this.getName() + ". " + ex.getCause());
         } catch (NullPointerException npe) {
 
-            System.out.println("Client " + this.getName() + " is closed");
+            System.out.println("runClient " + this.getName() + " is closed");
+            System.out.println(npe.getCause());
 
 
         }
 
 
-        out.println("You are connected. Waiting for another player...");
-
     }
 
 
-    public void closeConnection(){
+    public void updateBoard(){
+        Board.processInput(inputLine);
+    }
+
+    public void writeToClient(String message){
+
+
         try {
+
+            out.println(message);
+
+            if (outputLine != null){
+                String[] strArr = outputLine.split("~");
+                System.out.println("Server says: ");
+
+                for (String c : strArr) {
+                    System.out.println(c + "\t");
+                }
+            }
+
+
+
+                out.println(outputLine);
+
+        } catch (NullPointerException npe) {
+
+            System.out.println("Client " + this.getName() + " is closed2");
+            npe.printStackTrace();
+
+        }
+    }
+
+
+
+    public void update(String board){
+        try {
+            out = new PrintWriter(
+                    client.getOutputStream(), true
+            );
+            System.out.println("ServerThread::update() " + this.getName() + " " + board);
+            out.println("Board: " + board);
+
+        } catch (IOException ex) {
+
+            System.out.println("IOException in client " + this.getName() + ". " + ex.getCause());
+        } catch (NullPointerException npe) {
+            System.out.println(this.getName() + " has a problem. " + npe.getCause());
+            npe.printStackTrace();
+        }
+    }
+
+
+
+    public void closeConnection(){
+
+         try {
             System.out.println("Connection closing");
             if (in != null){
                 in.close();

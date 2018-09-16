@@ -9,16 +9,11 @@ import java.net.*;
  */
 public class Server {
 
-    static Socket[] clients = new Socket[2];
-    static BufferedReader[] inputs = new BufferedReader[2];
 
     static ServerSocket server;
     static Socket client;
     static BufferedReader in;
-    static BufferedReader in2;
     static PrintWriter out;
-    static PrintWriter out2;
-    static Socket client2;
 
     public static void main(String[] args) {
 
@@ -28,15 +23,16 @@ public class Server {
             System.out.println("Server listening");
 
 
-            while(true){
+            while(Board.getObservers() < 2){
                 try{
 
                     client = server.accept();
                     System.out.println("Connection established");
 
-                    System.out.println("client1 is: " + client.toString());
-
-                    new ServerThread(client).start();
+                    System.out.println("client is: " + client.toString());
+                    ServerThread s =  new ServerThread(client);
+                    Board.attach(s);
+                    s.start();
 
 
                 } catch (Exception e) {
@@ -49,8 +45,8 @@ public class Server {
         } catch (Exception e) {
 
         }
-    }
 
+    }
 
 
     public static void closeServer() throws IOException{
@@ -61,11 +57,6 @@ public class Server {
         server.close();
     }
 
-
-    public static void updateBoards() throws IOException{
-        System.out.println("UpdateBoards()");
-        //dos.writeUTF(Board.viewBoard() + "\nWhere do you want to place your mark?");
-    }
 
 
 
